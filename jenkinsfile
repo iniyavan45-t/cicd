@@ -1,19 +1,27 @@
 pipeline {
   agent any
   stages {
-    stage('Pull Code') {
+    stage('Checkout') {
       steps {
+        // Always fetch fresh code
+        deleteDir()
         git branch: 'main', url: 'https://github.com/iniyavan45-t/cicd.git'
       }
     }
     stage('Deploy') {
       steps {
         sh '''
+        echo "Cleaning old files..."
         sudo rm -rf /var/www/html/*
-        sudo cp -r * /var/www/html/
+
+        echo "Copying new files..."
+        sudo cp -r ./* /var/www/html/
+
+        echo "Restarting Nginx..."
         sudo systemctl restart nginx
         '''
       }
     }
   }
 }
+
